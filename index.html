@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelime Bulmaca</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="game-area">
+            <div class="game-header">
+                <div class="score">Puan: <span id="score">0</span></div>
+                <div class="timer">Süre: <span id="timer">0:00</span></div>
+            </div>
+            <div id="grid" class="grid"></div>
+            <div class="word-display">
+                <span id="current-word"></span>
+            </div>
+            <button id="reset-btn">Yeni Oyun</button>
+        </div>
+        <div class="words-list">
+            <h3>Bulunan Kelimeler</h3>
+            <ul id="found-words" class="found-words"></ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
