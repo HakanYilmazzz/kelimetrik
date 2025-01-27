@@ -124,21 +124,34 @@ class WordGame {
         if (this.foundWords.get(word.length).has(word)) return false;
         
         try {
-            // Kelimeyi küçük harfe dönüştür
             word = word.toLocaleLowerCase('tr-TR');
-            
-            // Yeni API'ye istek gönder
             const response = await fetch(`https://kelimelikbackend-production.up.railway.app/api/kelime/${word}`);
             
             if (!response.ok) return false;
             
             const data = await response.json();
             
-            return Array.isArray(data) && data.length > 0;
+            // Kelime geçerliyse anlamını da saklayalım
+            if (Array.isArray(data) && data.length > 0) {
+                // Kelime anlamını cache'leyelim
+                this.wordMeanings = this.wordMeanings || new Map();
+                if (data[0].anlamlarListe && data[0].anlamlarListe.length > 0) {
+                    this.wordMeanings.set(word, data[0].anlamlarListe[0].anlam);
+                } else {
+                    this.wordMeanings.set(word, 'Anlam bulunamadı');
+                }
+                return true;
+            }
+            return false;
         } catch (error) {
             console.error('Kelime kontrolü sırasında hata:', error);
             return false;
         }
+    }
+
+    getWordMeaning(word) {
+        word = word.toLocaleLowerCase('tr-TR');
+        return this.wordMeanings.get(word) || 'Anlam bulunamadı';
     }
 
     renderGrid() {
@@ -221,22 +234,6 @@ class WordGame {
         this.checkingWord = false;
     }
 
-    async getWordMeaning(word) {
-        try {
-            const response = await fetch(`https://kelimelikbackend-production.up.railway.app/api/kelime/${word.toLocaleLowerCase('tr-TR')}`);
-            const data = await response.json();
-            
-            if (Array.isArray(data) && data.length > 0 && data[0].anlamlarListe) {
-                // İlk anlamı al
-                return data[0].anlamlarListe[0].anlam;
-            }
-            return 'Anlam bulunamadı';
-        } catch (error) {
-            console.error('Anlam alınırken hata:', error);
-            return 'Anlam bulunamadı';
-        }
-    }
-
     async addWordToList(word, score) {
         const length = word.length;
         const wordSet = this.foundWords.get(length);
@@ -244,7 +241,7 @@ class WordGame {
         
         const group = this.foundWordsElement.children[length - 2];
         const listElement = group.querySelector('.found-words');
-        const meaning = await this.getWordMeaning(word);
+        const meaning = this.getWordMeaning(word);
         
         const li = document.createElement('li');
         li.textContent = word;
