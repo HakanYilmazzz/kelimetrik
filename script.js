@@ -127,14 +127,12 @@ class WordGame {
             // Kelimeyi küçük harfe dönüştür
             word = word.toLocaleLowerCase('tr-TR');
             
-            // API'ye direkt kelimeyi gönder
-            const response = await fetch(`https://sozluk.gov.tr/gts?ara=${word}`);
+            // Yeni API'ye istek gönder
+            const response = await fetch(`https://kelimelikbackend-production.up.railway.app/api/kelime/${word}`);
             
             if (!response.ok) return false;
             
             const data = await response.json();
-            
-            if (data.error) return false;
             
             return Array.isArray(data) && data.length > 0;
         } catch (error) {
@@ -225,7 +223,7 @@ class WordGame {
 
     async getWordMeaning(word) {
         try {
-            const response = await fetch(`https://sozluk.gov.tr/gts?ara=${word.toLocaleLowerCase('tr-TR')}`);
+            const response = await fetch(`https://kelimelikbackend-production.up.railway.app/api/kelime/${word.toLocaleLowerCase('tr-TR')}`);
             const data = await response.json();
             
             if (Array.isArray(data) && data.length > 0 && data[0].anlamlarListe) {
